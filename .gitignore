@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+
+# Entornos virtuales
+.venv/
+env/
+venv/
+
+# Configuración de VS Code y SO
+.vscode/
+.DS_Store
+Thumbs.db
