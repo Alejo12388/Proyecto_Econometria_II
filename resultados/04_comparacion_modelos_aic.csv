@@ -1,0 +1,9 @@
+Modelo,"Order (p,d,q)",Constante,AIC,BIC,Log-Likelihood
+"ARIMA(0,1,1) con constante","(0, 1, 1)",Sí,1625.44,1634.06,-809.72
+"ARIMA(0,1,0) con constante (Random Walk with Drift)","(0, 1, 0)",Sí,1625.52,1631.27,-810.76
+"ARIMA(1,1,0) con constante","(1, 1, 0)",Sí,1625.63,1634.25,-809.81
+"ARIMA(0,1,1) sin constante","(0, 1, 1)",No,1625.94,1631.69,-810.97
+"ARIMA(1,1,0) sin constante","(1, 1, 0)",No,1626.09,1631.84,-811.04
+"ARIMA(0,1,0) sin constante (Random Walk puro)","(0, 1, 0)",No,1626.72,1629.59,-812.36
+"ARIMA(1,1,1) con constante","(1, 1, 1)",Sí,1627.31,1638.81,-809.66
+"ARIMA(1,1,1) sin constante","(1, 1, 1)",No,1627.91,1636.54,-810.96
