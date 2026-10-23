@@ -8,6 +8,7 @@ import pandas as pd
 import scipy.stats as stats
 from statsmodels.graphics.tsaplots import plot_acf
 from statsmodels.stats.diagnostic import acorr_ljungbox
+from statsmodels.stats.diagnostic import het_arch
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 
 # Definimos rutas relativas
@@ -23,8 +24,9 @@ df.set_index("Fecha", inplace=True)
 df.index.freq = "MS"
 serie_trm = df["TRM_Promedio_Mensual"]
 
-#Ajuste del modelo ganador: ARIMA(0,1,1) con constante
-modelo_ganador = SARIMAX(serie_trm, order=(0, 1, 1), trend="c")
+# Ajuste del modelo ganador: ARIMA(0,1,1) con deriva.
+# Con una diferencia, la constante se representa mediante una tendencia lineal.
+modelo_ganador = SARIMAX(serie_trm, order=(0, 1, 1), trend="t")
 fit_ganador = modelo_ganador.fit(disp=False)
 
 # Extraemos los residuales del modelo
@@ -34,7 +36,7 @@ print(f"Media de los residuos: {residuos.mean():.4f} (Cercana a 0)")
 
 #Prueba formal de Ljung-Box (para el RB)
 # Evaluamos a 6 y 12 rezagos (memoria semestral y anual)
-tabla_ljung = acorr_ljungbox(residuos, lags=[6, 12], return_df=True)
+tabla_ljung = acorr_ljungbox(residuos, lags=[6, 12], model_df=1, return_df=True)
 print("\n--- PRUEBA DE LJUNG-BOX (AUTOCORRELACIÓN RESIDUAL) ---")
 print(tabla_ljung)
 
@@ -45,6 +47,18 @@ if (tabla_ljung["lb_pvalue"] > 0.05).all():
 	)
 else:
 	print("\nConclusión Ljung-Box: Los residuos presentan autocorrelación significativa.")
+
+# Prueba ARCH de Engle: evalúa la varianza condicional a 6 y 12 rezagos
+print("\n--- PRUEBA ARCH DE ENGLE (HETEROCEDASTICIDAD CONDICIONAL) ---")
+for rezagos in (6, 12):
+	lm_stat, lm_pvalue, f_stat, f_pvalue = het_arch(residuos, nlags=rezagos)
+	print(f"\nRezagos: {rezagos}")
+	print(f"Estadístico LM: {lm_stat:.4f}")
+	print(f"p-valor (LM): {lm_pvalue:.4f}")
+	if lm_pvalue > 0.05:
+		print("Conclusión ARCH: No se rechaza H0. Los residuos son HOMOCEDÁSTICOS (varianza constante).")
+	else:
+		print("Conclusión ARCH: Se rechaza H0. Hay efectos ARCH (volatilidad agrupada común en divisas).")
 
 # Prueba formal de normalidad de Jarque-Bera
 jb_stat, jb_pvalue = stats.jarque_bera(residuos)
@@ -105,4 +119,4 @@ plt.tight_layout()
 ruta_grafica = ruta_resultados / "05_diagnostico_residuos.png"
 plt.savefig(ruta_grafica)
 plt.show()
-print(f"\n¡ÉXITO de las pruebas! va para: {ruta_grafica}")
+print(f"\nGráfica de diagnóstico guardada en: {ruta_grafica}")

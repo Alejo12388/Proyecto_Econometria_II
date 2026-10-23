@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-# 1. Definir la ruta relativa usando pathlib (como exige la guía)
+# 1. Definir la ruta relativa usando pathlib 
 ruta_base = Path(__file__).resolve().parent.parent
 ruta_datos = ruta_base / "datos" / "TRM_Mensual_2014_2024.csv"
 
